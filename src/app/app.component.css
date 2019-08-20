@@ -1,0 +1,8 @@
+.main-content {
+    padding: 20px;
+  }
+
+.example-button-row button,
+.example-button-row a {
+  margin: 0 8px 20px 0;
+}

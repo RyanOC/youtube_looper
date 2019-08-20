@@ -1,0 +1,34 @@
+/* You can add global styles to this file, and also import other style files */
+
+// a {
+//     text-decoration-color: mat-color($app-primary);
+//     color: mat-color($app-primary);
+// }
+
+// .active-list-item { 
+//     color: mat-color($app-accent) !important;
+// } 
+
+@import 'custom-theme-light.scss';
+@import 'custom-theme-dark.scss';
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+.custom-theme-light {
+  @include angular-material-theme($custom-theme-light);
+}
+.custom-theme-dark {
+  @include angular-material-theme($custom-theme-dark);
+}
+
+body { 
+    //background: rgba(0,0,0,.87);
+    font-family: Roboto, Arial, sans-serif;
+    margin: 0;
+}
+
+.biggericon {
+    transform: scale(2);
+    margin: 0 20px 0 10px;
+}

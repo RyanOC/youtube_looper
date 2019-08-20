@@ -1,0 +1,64 @@
+// @import '~@angular/material/theming';
+// @include mat-core();
+// $app-primary: mat-palette($mat-blue);
+// $app-accent: mat-palette($mat-orange, A200, A100, A400);
+// $app-warn: mat-palette($mat-red);
+// $custom-theme-light: mat-dark-theme($app-primary, $app-accent, $app-warn);
+// @include angular-material-theme($custom-theme-light);
+
+@import '~@angular/material/theming';
+@include mat-core();
+
+$my-light-theme-background: (
+    status-bar: green,
+    app-bar:    map_get($mat-blue, 900),
+    background: rgb(255, 255, 255),
+    hover:      rgba(white, 0.04), 
+    card:       rgba(white, 0.04), 
+    dialog:     rgba(rgb(233, 233, 233), 1), 
+    disabled-button: $white-12-opacity,
+    raised-button: map-get($mat-grey, 800),
+    focused-button: $white-6-opacity,
+    selected-button: map_get($mat-grey, 900),
+    selected-disabled-button: map_get($mat-grey, 800),
+    disabled-button-toggle: black,
+    unselected-chip: map_get($mat-grey, 700),
+    disabled-list-option: black,
+);
+
+$my-light-theme-foreground: (
+  base:              yellow,
+  divider:           $white-12-opacity,
+  dividers:          $white-12-opacity,
+  disabled:          rgba(rgb(27, 27, 27), 0.3),
+  disabled-button:   rgba(rgb(27, 27, 27), 0.3),
+  disabled-text:     rgba(rgb(27, 27, 27), 0.3),
+  hint-text:         rgba(rgb(27, 27, 27), 0.3),
+  secondary-text:    rgba(rgb(27, 27, 27), 0.7),
+  icon:              rgb(27, 27, 27),
+  icons:             rgb(27, 27, 27),
+  text:              rgb(27, 27, 27),
+  slider-min:        rgb(27, 27, 27),
+  slider-off:        rgba(white, 0.3),
+  slider-off-active: rgba(white, 0.3),
+);
+
+@function create-wonky-theme($primary, $accent, $warn: mat-palette($mat-red)) {
+    @return (
+        primary: $primary,
+        accent: $accent,
+        warn: $warn,
+        is-dark: false,
+        foreground: $my-light-theme-foreground,
+        background: $my-light-theme-background,
+    );
+}
+
+
+$app-primary: mat-palette($mat-light-blue, 0.3);
+$app-accent: mat-palette($mat-orange, A200, A100, A400);
+$app-warn: mat-palette($mat-red);
+
+$custom-theme-light: create-wonky-theme($app-primary, $app-accent, $app-warn);
+
+@include angular-material-theme($custom-theme-light);
