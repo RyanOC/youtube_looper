@@ -50,10 +50,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 
+import { YoutubePlayerService } from './shared/services/youtube-player.service';
+
 import { AppComponent } from './app.component';
 import { LeftNavComponent } from './nav/left-nav.component';
 import { HomeComponent } from './home/home.component';
 import { CustomerListComponent } from './customer/customer-list/customer-list.component';
+
+
 
 const appRoutes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -91,7 +95,9 @@ const appRoutes: Routes = [
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    YoutubePlayerService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
