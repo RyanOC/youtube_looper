@@ -60,7 +60,7 @@ import { CustomerListComponent } from './customer/customer-list/customer-list.co
 
 
 const appRoutes: Routes = [
-  { path: 'home', component: HomeComponent },
+  { path: 'player', component: HomeComponent },
   { path: 'customer-list', component: CustomerListComponent },
   { path: '', component: HomeComponent },
 ];
