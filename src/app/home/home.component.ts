@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, OnChanges, DoCheck } from '@angular/core';
 import { YoutubePlayerService } from './../shared/services/youtube-player.service';
 import { AnimationQueryMetadata } from '@angular/animations';
 import { Observable, Subscription } from 'rxjs/Rx';
@@ -13,7 +13,7 @@ let _window: any = window;
   //styles: [('../../../../src/styles.scss')]
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit { //,DoCheck  {
 
   public player;
   public playingEvent = 'pause';
@@ -24,8 +24,9 @@ export class HomeComponent implements OnInit {
   timeInterval: any;
   bitStart: any = '0:00';
   bitEnd: any = '0:00';
-  timeMessage = ''
-  timeoutInterval: number = 1000;
+  timeMessage = '0'
+  timeoutInterval: number = 100;
+  videoId: string = 'Zt8LyEvTC5s';
 
   constructor(
       //private youtubePlayer: YoutubePlayerService
@@ -34,17 +35,24 @@ export class HomeComponent implements OnInit {
 
   //  https://stackblitz.com/edit/youtube-player-m1evcf?file=src/main.ts
 
+  // ngDoCheck() {
+  //   console.log('Running change detection ', this.videoId);
+  //   //this.player.seekTo('0:00');
+  //   //this.SetVideoId(true);
+  // }
+
   ngOnInit() {
     console.log('home works!');
     (window as any).onYouTubeIframeAPIReady = function () { this.onYouTubePlayerAPIReady() }.bind(this)
   }
 
+  // https://developers.google.com/youtube/iframe_api_reference
   onYouTubePlayerAPIReady() {
       console.log('onYouTubePlayerAPIReady');
       this.player = new _window.YT.Player('player', {
           height: '200',
           width: '300',
-          videoId: 'Zt8LyEvTC5s',
+          videoId: this.videoId,
           playerVars: { 'autoplay': 0, 'controls': 1,'autohide':1,'wmode':'opaque' },
           events: {
             'onStateChange': this.onPlayerStateChange.bind(this)
@@ -52,30 +60,21 @@ export class HomeComponent implements OnInit {
       });
   }
 
-
-
-
-
   onPlayerStateChange(e) {
 
-    clearInterval(this.timeInterval);
+    this.timeMessage = '1';
 
     if (e.data == 2) {
-        // player stopped (1 is stopped)     
+        // player stopped (1 is stopped) 
+        clearInterval(this.timeInterval);    
     }
     else if(e.data == 1){
       // player started
-      clearInterval(this.timeInterval);
-
-      this.timeInterval = setInterval(function () {
-        var message = this.GetTime();
-        this.timeMessage = message;
-        console.log(this.timeMessage);
-      }.bind(this), this.timeoutInterval);
+      this.SetVideoId(false);
     }
   }
 
-  SetVideoId() {
+  SetVideoId(startPlayer) {
 
     clearInterval(this.timeInterval);
 
@@ -84,14 +83,19 @@ export class HomeComponent implements OnInit {
     this.endTime = this.convertTime(this.bitEnd);
 
     this.timeInterval = setInterval(function () {
+
       var message = this.GetTime();
-      this.timeMessage = message;
-      console.log(this.timeMessage);
+      //console.log(message);
+      this.timeMessage = message+'';
+      (<HTMLInputElement>document.getElementById('testSpan')).innerHTML = message+'';
+
     }.bind(this), this.timeoutInterval);
 
-    //this.player.cueVideoById(vid);
-    this.player.seekTo(this.startTime);
-    this.player.playVideo();
+    if(startPlayer){
+      //this.player.cueVideoById(vid);
+      this.player.seekTo(this.startTime);
+      this.player.playVideo();
+    }  
   }
 
 
@@ -113,7 +117,7 @@ export class HomeComponent implements OnInit {
     this.bitEnd = inputEndValue;
     this.player.seekTo(this.convertTime(inputStartValue));
     this.player.playVideo();
-    this.SetVideoId();
+    this.SetVideoId(true);
   }
 
   playPause(event: string): void {
