@@ -32,3 +32,24 @@ body {
     transform: scale(2);
     margin: 0 20px 0 10px;
 }
+
+.mat-list-item {
+  background: #6e6e6e;
+  margin: 5px;
+  border-radius: 8px;
+}
+.mat-list-item:hover {
+  background: rgba(0,0,0,.54);
+  cursor: pointer;
+  transform: scale(1.01);
+}
+
+.happy-animation {
+  background: rgb(109, 109, 109) !important;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  animation-name: example !important;
+  animation-duration: 0.3s !important;
+}

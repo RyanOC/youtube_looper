@@ -57,7 +57,11 @@ import { LeftNavComponent } from './nav/left-nav.component';
 import { HomeComponent } from './home/home.component';
 import { CustomerListComponent } from './customer/customer-list/customer-list.component';
 
+import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
+import {
+	MatFormFieldModule
+} from '@angular/material';
 
 const appRoutes: Routes = [
   { path: 'player', component: HomeComponent },
@@ -71,7 +75,7 @@ const appRoutes: Routes = [
     LeftNavComponent,
     HomeComponent,
     CustomerListComponent,
-    CustomerListComponent
+    CustomerListComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,7 +90,9 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    MatFormFieldModule,
+    MatSelectModule
   ],
   exports: [
     MatSidenavModule,
@@ -96,7 +102,8 @@ const appRoutes: Routes = [
     ReactiveFormsModule
   ],
   providers: [
-    YoutubePlayerService
+    YoutubePlayerService,
+    Location, { provide: LocationStrategy, useClass: PathLocationStrategy }
   ],
   bootstrap: [AppComponent]
 })
