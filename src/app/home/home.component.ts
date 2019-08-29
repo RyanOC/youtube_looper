@@ -1,8 +1,8 @@
 import { Component, OnInit, ElementRef, OnChanges, DoCheck } from '@angular/core';
 import { Location } from '@angular/common';
-import { YoutubePlayerService } from './../shared/services/youtube-player.service';
-import { AnimationQueryMetadata } from '@angular/animations';
-import { Observable, Subscription } from 'rxjs/Rx';
+//import { YoutubePlayerService } from './../shared/services/youtube-player.service';
+//import { AnimationQueryMetadata } from '@angular/animations';
+//import { Observable, Subscription } from 'rxjs/Rx';
 import 'rxjs/add/observable/interval';
 
 let _window: any = window;
@@ -19,33 +19,34 @@ export interface Speed {
   //styles: [('../../../../src/styles.scss')]
 })
 
-
 export class HomeComponent implements OnInit { //,DoCheck  {
   selected = 'option2';
   public player;
   public playingEvent = 'pause';
+
   status: boolean = false;
   selectedIndex: number = 0;
-  endTime: any;
-  startTime: any;
+  startTime: number = 0;
+  endTime: number = 0;
+  
   timeInterval: any;
-  bitStart: any = '0:00';
-  bitEnd: any = '0:00';
   timeMessage = '0'
-  timeoutInterval: number = 100;
-  videoId: string = 'Zt8LyEvTC5s';
-  videoTitle: string = 'test title';
+  timeoutInterval: number = 10;
 
-  times = [
-    { index: 0, selected: true, s: '0:03', e: '0:05' },
-    { index: 1, selected: false, s: '0:10', e: '0:13' },
-    { index: 2, selected: false, s: '0:60', e: '1:02' },
-    { index: 3, selected: false, s: '0:00', e: '0:00' },
-    { index: 4, selected: false, s: '0:00', e: '0:00' },
-    { index: 5, selected: false, s: '0:00', e: '0:00' },
-    { index: 6, selected: false, s: '0:00', e: '0:00' },
-    { index: 7, selected: false, s: '0:00', e: '0:00' },
-  ];
+  loop = {
+    videoId: '',
+    videoTitle: 'test title',
+    times: [
+      { i: 0, sl: true, s: '0:03', e: '0:05' },
+      { i: 1, sl: false, s: '0:10', e: '0:13' },
+      { i: 2, sl: false, s: '0:60', e: '1:02' },
+      { i: 3, sl: false, s: '0:00', e: '0:00' },
+      { i: 4, sl: false, s: '0:00', e: '0:00' },
+      { i: 5, sl: false, s: '0:00', e: '0:00' },
+      { i: 6, sl: false, s: '0:00', e: '0:00' },
+      { i: 7, sl: false, s: '0:00', e: '0:00' },
+    ]
+  };
 
   speeds: Speed[] = [
     {value: '0.25', viewValue: '0.25'},
@@ -64,35 +65,27 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     ) { 
 
       this.location.subscribe((value: PopStateEvent) => {
-
-        console.log(value);
-        // if (value.url) {
-        //   this.selectedIndex = (+value.url.substr(1) - 1) || 0;
-        // }
+        //console.log(value);
       });
-
     }
 
   //  https://stackblitz.com/edit/youtube-player-m1evcf?file=src/main.ts
-
   // ngDoCheck() {
   //   console.log('Running change detection ', this.videoId);
-  //   //this.player.seekTo('0:00');
-  //   //this.SetVideoId(true);
   // }
 
   ngOnInit() {
-    console.log('home works!');
+
+    this.loadState();
     (window as any).onYouTubeIframeAPIReady = function () { this.onYouTubePlayerAPIReady() }.bind(this)
   }
 
   // https://developers.google.com/youtube/iframe_api_reference
   onYouTubePlayerAPIReady() {
-      console.log('onYouTubePlayerAPIReady');
       this.player = new _window.YT.Player('player', {
-          height: '200',
-          width: '300',
-          videoId: this.videoId,
+          height: '140',
+          width: '240',
+          videoId: this.loop.videoId,
           playerVars: { 'autoplay': 0, 'controls': 1,'autohide':1,'wmode':'opaque' },
           events: {
             'onStateChange': this.onPlayerStateChange.bind(this)
@@ -101,8 +94,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   }
 
   onPlayerStateChange(e) {
-
-    this.timeMessage = '1';
+    this.timeMessage = '0';
 
     if (e.data == 2) {
         // player stopped (1 is stopped) 
@@ -115,23 +107,18 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   }
 
   SetVideoId(startPlayer) {
-
     clearInterval(this.timeInterval);
-    this.startTime = this.convertTime(this.bitStart);
-    this.endTime = this.convertTime(this.bitEnd);
-
+    this.startTime = this.convertTime(this.loop.times[this.selectedIndex].s);
+    this.endTime = this.convertTime(this.loop.times[this.selectedIndex].e);
     this.timeInterval = setInterval(function () {
-
       var message = this.GetTime();
       this.timeMessage = message+'';
-      (<HTMLInputElement>document.getElementById('testSpan')).innerHTML = message+'';
-
+      (<HTMLInputElement>document.getElementById('currentTime')).innerHTML = message+'';
     }.bind(this), this.timeoutInterval);
 
     if(startPlayer){
-      this.player.cueVideoById(this.videoId);
-      this.player.seekTo(this.startTime);
-      this.player.playVideo();
+      this.player.loadVideoById(this.loop.videoId, this.startTime);
+      this.player.playVideo(); 
     }  
   }
 
@@ -145,24 +132,18 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   save()
   {
     this.SaveState();
-    this.selectBit(null, -1);
+    this.selectBit(null, null);
   }
 
   selectBit(event, time) {
-
-    if(time.index != -1){
-      this.times[this.selectedIndex].selected = false;
-      this.selectedIndex = time.index;  
-      this.times[time.index].selected = true;
+    if(time && time.i != -1){
+      this.loop.times[this.selectedIndex].sl = false;
+      this.selectedIndex = time.i;  
+      this.loop.times[time.i].sl = true;
     }
-    
-    //var inputStartValue = time.s; // (<HTMLInputElement>document.getElementById('s' + this.selectedIndex)).value;
-    //var inputEndValue = time.e; //(<HTMLInputElement>document.getElementById('e' + this.selectedIndex)).value;
-
-    this.bitStart = this.convertTime(time.s);
-    this.bitEnd = this.convertTime(time.e);
-    this.player.seekTo(this.bitStart);
-    this.player.playVideo();
+    else if(!time){
+      return;
+    }
     this.SetVideoId(true);
   }
 
@@ -173,14 +154,16 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   GetTime() {
       let currentTime = this.player.getCurrentTime();
 
+      if(!currentTime) currentTime = 0;
+
       if (currentTime >= this.endTime) {
           this.player.seekTo(this.startTime);
       }
 
       var current = this.player.getCurrentTime();
- 
+
       try {
-          current = current.toFixed(2);
+          current = (current == undefined ? 0 : current.toFixed(2));
       }
       catch (ex) {
           console.log(ex);
@@ -189,7 +172,6 @@ export class HomeComponent implements OnInit { //,DoCheck  {
       var minutes = Math.floor(current / 60);
       var seconds = current % 60;
       //seconds = parseFloat(seconds).toFixed(2);
-
       return minutes + ":" + seconds;
   }
 
@@ -201,69 +183,94 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   }
 
   locationHashChanged() {
-
-      console.log('locationHashChanged');
-
+      //console.log('locationHashChanged');
       if (window.location.hash.substr(1).length > 0) {
-
-        console.log(window.location.hash);
-
-          // LoadState();
-
-          // if (currentBits != null) {
-          //     //console.log(currentBits);
-          //     bitStart = $(currentBits[0]).val();
-          //     bitEnd = $(currentBits[1]).val();
-          // }
-          // else {
-          //     bitStart = $("#s0").val();
-          //     bitEnd = $("#e0").val();
-          // }
-
-          // //TODO: start video...
-
-          // SetVideoId();
+        //console.log(window.location.hash);
       }
   }
 
   SaveState() {
 
-    //TODO: save previous state in history https://developer.mozilla.org/en-US/docs/Web/API/History_API
+    document.title = "YouTube Looper -" + this.loop.videoTitle;
 
-    document.title = "BitPractice-" + this.videoTitle;
+    var loopClone = JSON.parse(JSON.stringify(this.loop));
 
-    var BitPracticeModel = {};
-    var title = this.videoTitle; // $("#title").val();
-    var vid = this.videoId; // $("#videoid").val();
+    // delete loopClone.times[0].sl;
+    // delete loopClone.times[1].sl;
+    // delete loopClone.times[2].sl;
+    // delete loopClone.times[3].sl;
+    // delete loopClone.times[4].sl;
+    // delete loopClone.times[5].sl;
+    // delete loopClone.times[6].sl;
+    // delete loopClone.times[7].sl;
 
-    // $("#bitTimes :input").each(function (index) {
-    //     var key = $(this).attr('id');
-    //     if (key != undefined) {
-    //         if ($(this).val() != "0:00") {
-    //             BitPracticeModel[key] = $(this).val();
-    //         }
-    //     }        
-    // });
+    // if(loopClone.times[0].s == '0:00') delete loopClone.times[0];
+    // if(loopClone.times[1].s == '0:00') delete loopClone.times[1];
+    // if(loopClone.times[2].s == '0:00') delete loopClone.times[2];
+    // if(loopClone.times[3].s == '0:00') delete loopClone.times[3];
+    // if(loopClone.times[4].s == '0:00') delete loopClone.times[4];
+    // if(loopClone.times[5].s == '0:00') delete loopClone.times[5];
+    // if(loopClone.times[6].s == '0:00') delete loopClone.times[6];
+    // if(loopClone.times[7].s == '0:00') delete loopClone.times[7];
 
-    BitPracticeModel['v'] = vid;
-    BitPracticeModel['t'] = title;
-
-    BitPracticeModel['s0'] = '0:03';
-    BitPracticeModel['e0'] = '0:05.4';
-
-    var json = JSON.stringify(BitPracticeModel); // $.param(BitPracticeModel);
-    json = json.replace(/%3A/g, ':');
-    json = json.replace(/"/g, '');
-    json = json.replace(/{/g, '');
-    json = json.replace(/}/g, '');
+    let json: string = JSON.stringify(loopClone); // $.param(BitPracticeModel);
+    // json = json.replace(/%3A/g, ':');
+    // json = json.replace(/"/g, '');
+    // json = json.replace(/{/g, '');
+    // json = json.replace(/}/g, '');
+    // json = json.replace(/videoId/g, 'vid');
+    // json = json.replace(/videoTitle/g, 'vt');
+    // json = json.replace(/times/g, 't');
+    // json = json.replace(/,null/g, '');
 
     setTimeout(function (e) {
         window.location.hash = e;
-    }, 1, json);
+    }, 10, json);
 
     //var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + vid + '&t=' + title;
     //window.history.pushState({ path: newurl }, '', newurl);
   }
+
+  loadState() {
+
+    document.title = "YouTube Looper - " + this.loop.videoTitle;
+    var hash = window.location.hash.substr(1);
+
+    if(hash != ''){
+      var loopState = decodeURI(hash);
+      this.loop = JSON.parse(loopState);
+      document.title = "YouTube Looper - " + this.loop.videoTitle;
+    }
+    else{
+      // set default loop up...
+      this.loop.videoId = 'CcGoYPR9FBk';
+      this.loop.videoTitle = 'Getting Started';
+      this.loop.times = [
+        { i: 0, sl: true, s: '0:00', e: '0:02' },
+        { i: 1, sl: false, s: '0:00', e: '0:00' },
+        { i: 2, sl: false, s: '0:60', e: '0:00' },
+        { i: 3, sl: false, s: '0:00', e: '0:00' },
+        { i: 4, sl: false, s: '0:00', e: '0:00' },
+        { i: 5, sl: false, s: '0:00', e: '0:00' },
+        { i: 6, sl: false, s: '0:00', e: '0:00' },
+        { i: 7, sl: false, s: '0:00', e: '0:00' }
+      ];
+    }
+  
+    //get t & v from querystring...
+    //$("#title").val(getParameterByName('t'));
+    //$("#videoid").val(getParameterByName('v'));
+
+    // for (var property in BitPracticeModel) {
+    //     if (BitPracticeModel.hasOwnProperty(property)) {
+    //         if (property != undefined) {
+    //             $("#" + property).val(BitPracticeModel[property]);
+    //         }      
+    //     }
+    // }
+
+    //document.title = "BitPractice-" + $("#title").val();
+}
 
   getParameterByName(name, url) {
       if (!url) url = window.location.href;
@@ -300,6 +307,15 @@ export class HomeComponent implements OnInit { //,DoCheck  {
         params[paramSplit[0]] = paramSplit[1];
         return params;
     }, {});
+  }
+
+  clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
 }
 
 
