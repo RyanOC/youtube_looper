@@ -124,7 +124,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
 
   ngAfterContentInit() {
     var tag = document.createElement('script');
-    tag.src = "http://www.youtube.com/iframe_api"; // target/origin errors will be thrown if ssl and non ssl are used between the youtube api url and the host url runnning this application
+    tag.src = "https://www.youtube.com/iframe_api"; // target/origin errors will be thrown if ssl and non ssl are used between the youtube api url and the host url runnning this application
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   }
@@ -160,17 +160,17 @@ export class HomeComponent implements OnInit { //,DoCheck  {
           this.player.seekTo(this.startTime);
       }
 
-      var current = this.player.getCurrentTime();
+      //var current = this.player.getCurrentTime();
 
       try {
-          current = (current == undefined ? 0 : current.toFixed(2));
+        currentTime = (currentTime == undefined ? 0 : currentTime.toFixed(2));
       }
       catch (ex) {
           console.log(ex);
       }
 
-      var minutes = Math.floor(current / 60);
-      var seconds = current % 60;
+      var minutes = Math.floor(currentTime / 60);
+      var seconds = currentTime % 60;
       //seconds = parseFloat(seconds).toFixed(2);
       return minutes + ":" + seconds;
   }
@@ -190,6 +190,9 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   }
 
   SaveState() {
+
+    // https://howchoo.com/g/nwywodhkndm/how-to-turn-an-object-into-query-string-parameters-in-javascript
+    // https://stackoverflow.com/questions/6566456/how-to-serialize-an-object-into-a-list-of-url-query-parameters
 
     document.title = "YouTube Looper -" + this.loop.videoTitle;
 
