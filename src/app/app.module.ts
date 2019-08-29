@@ -61,7 +61,7 @@ import { Location, LocationStrategy, PathLocationStrategy } from '@angular/commo
 
 import {
 	MatFormFieldModule
-} from '@angular/material';
+} from '@angular/material/form-field';
 
 const appRoutes: Routes = [
   { path: 'player', component: HomeComponent },
