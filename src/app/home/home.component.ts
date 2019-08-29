@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     times: [
       { i: 0, sl: true, s: '0:03', e: '0:05' },
       { i: 1, sl: false, s: '0:10', e: '0:13' },
-      { i: 2, sl: false, s: '0:60', e: '1:02' },
+      { i: 2, sl: false, s: '0:00', e: '0:00' },
       { i: 3, sl: false, s: '0:00', e: '0:00' },
       { i: 4, sl: false, s: '0:00', e: '0:00' },
       { i: 5, sl: false, s: '0:00', e: '0:00' },
@@ -198,14 +198,14 @@ export class HomeComponent implements OnInit { //,DoCheck  {
 
     var loopClone = JSON.parse(JSON.stringify(this.loop));
 
-    // delete loopClone.times[0].sl;
-    // delete loopClone.times[1].sl;
-    // delete loopClone.times[2].sl;
-    // delete loopClone.times[3].sl;
-    // delete loopClone.times[4].sl;
-    // delete loopClone.times[5].sl;
-    // delete loopClone.times[6].sl;
-    // delete loopClone.times[7].sl;
+    delete loopClone.times[0].sl;
+    delete loopClone.times[1].sl;
+    delete loopClone.times[2].sl;
+    delete loopClone.times[3].sl;
+    delete loopClone.times[4].sl;
+    delete loopClone.times[5].sl;
+    delete loopClone.times[6].sl;
+    delete loopClone.times[7].sl;
 
     // if(loopClone.times[0].s == '0:00') delete loopClone.times[0];
     // if(loopClone.times[1].s == '0:00') delete loopClone.times[1];
@@ -216,19 +216,23 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     // if(loopClone.times[6].s == '0:00') delete loopClone.times[6];
     // if(loopClone.times[7].s == '0:00') delete loopClone.times[7];
 
+    var urlStateString = (this.serializeLoop(this.loop) + '&&' + this.serializeTimes(this.loop.times));
+
+    console.log(encodeURI(urlStateString));
+
     let json: string = JSON.stringify(loopClone); // $.param(BitPracticeModel);
     // json = json.replace(/%3A/g, ':');
-    // json = json.replace(/"/g, '');
+    json = json.replace(/"/g, '');
     // json = json.replace(/{/g, '');
     // json = json.replace(/}/g, '');
-    // json = json.replace(/videoId/g, 'vid');
-    // json = json.replace(/videoTitle/g, 'vt');
-    // json = json.replace(/times/g, 't');
-    // json = json.replace(/,null/g, '');
+    json = json.replace(/videoId/g, 'vid');
+    json = json.replace(/videoTitle/g, 'vt');
+    json = json.replace(/times/g, 't');
+    //json = json.replace(/,null/g, '');
 
     setTimeout(function (e) {
         window.location.hash = e;
-    }, 10, json);
+    }, 10, urlStateString);
 
     //var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + vid + '&t=' + title;
     //window.history.pushState({ path: newurl }, '', newurl);
@@ -240,8 +244,20 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     var hash = window.location.hash.substr(1);
 
     if(hash != ''){
-      var loopState = decodeURI(hash);
-      this.loop = JSON.parse(loopState);
+
+      var res = hash.split('&&');
+
+      var l = this.parseParams(res[0]);
+      var t = this.parseParams(res[1]);
+
+      // todo: reconstruct entire loop object...
+      this.loop.videoId = l.v;
+      this.loop.videoTitle = l.t;
+
+
+
+      //var loopState = decodeURI(hash);
+      //this.loop = JSON.parse(loopState);
       document.title = "YouTube Looper - " + this.loop.videoTitle;
     }
     else{
@@ -250,8 +266,8 @@ export class HomeComponent implements OnInit { //,DoCheck  {
       this.loop.videoTitle = 'Getting Started';
       this.loop.times = [
         { i: 0, sl: true, s: '0:00', e: '0:02' },
-        { i: 1, sl: false, s: '0:00', e: '0:00' },
-        { i: 2, sl: false, s: '0:60', e: '0:00' },
+        { i: 1, sl: false, s: '0:00', e: '0:02' },
+        { i: 2, sl: false, s: '0:00', e: '0:00' },
         { i: 3, sl: false, s: '0:00', e: '0:00' },
         { i: 4, sl: false, s: '0:00', e: '0:00' },
         { i: 5, sl: false, s: '0:00', e: '0:00' },
@@ -313,13 +329,30 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   }
 
   clone(obj) {
-    if (null == obj || "object" != typeof obj) return obj;
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-    }
-    return copy;
-}
+      if (null == obj || "object" != typeof obj) return obj;
+      var copy = obj.constructor();
+      for (var attr in obj) {
+          if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+      }
+      return copy;
+  }
 
+  serializeLoop(loop){
+    var loopString = 'v=' + loop.videoId + '&' + 't=' + loop.videoTitle;
+    return loopString;
+  }
+
+  serializeTimes(times){
+    var timesString = '';
+    times.forEach(function(element) {
+      if(element.e != '0:00'){
+        var queryString = Object.keys(element).map(key => key + '=' + element[key]).join('&');
+        timesString += queryString + ',';
+      }
+    });
+  
+    timesString = timesString.replace(/(^,)|(,$)/g, ""); 
+    return timesString;
+  }
 
 }
