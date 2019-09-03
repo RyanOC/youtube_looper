@@ -86,14 +86,21 @@ export class HomeComponent implements OnInit { //,DoCheck  {
           height: '140',
           width: '240',
           videoId: this.loop.videoId,
-          playerVars: { 'autoplay': 0, 'controls': 1,'autohide':1,'wmode':'opaque' },
+          playerVars: { 'autoplay': 0, 'controls': 0, 'autohide':1, 'wmode':'opaque' },
           events: {
+            'onReady': this.onPlayerReady.bind(this),
             'onStateChange': this.onPlayerStateChange.bind(this)
         }
       });
   }
 
+  onPlayerReady(e) {
+    this.loop.times[0].sl = true;
+    this.SetVideoId(true);
+  }
+
   onPlayerStateChange(e) {
+
     this.timeMessage = '0';
 
     if (e.data == 2) {
@@ -247,6 +254,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
         
       }.bind(this));
 
+      this.loop.times[0].sl = true;
     }
 }
 
