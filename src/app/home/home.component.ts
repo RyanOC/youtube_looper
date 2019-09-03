@@ -34,11 +34,11 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   timeoutInterval: number = 10;
 
   loop = {
-    videoId: '',
-    videoTitle: 'test title',
+    videoId: 'WCYBpNw_0hg',
+    videoTitle: 'Attack Of Robot Atomico',
     times: [
-      { i: 0, sl: true, s: '0:03', e: '0:05' },
-      { i: 1, sl: false, s: '0:10', e: '0:13' },
+      { i: 0, sl: true, s: '0:46', e: '0:49' },
+      { i: 1, sl: false, s: '0:58', e: '0:66' },
       { i: 2, sl: false, s: '0:00', e: '0:00' },
       { i: 3, sl: false, s: '0:00', e: '0:00' },
       { i: 4, sl: false, s: '0:00', e: '0:00' },
@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     {value: '2.0', viewValue: '2.0'}
   ];
 
-  selectedValue: string;
+  selectedSpeedValue: string = '1.0';
 
   constructor(
       //private youtubePlayer: YoutubePlayerService
@@ -107,6 +107,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
   }
 
   SetVideoId(startPlayer) {
+
     clearInterval(this.timeInterval);
     this.startTime = this.convertTime(this.loop.times[this.selectedIndex].s);
     this.endTime = this.convertTime(this.loop.times[this.selectedIndex].e);
@@ -116,7 +117,7 @@ export class HomeComponent implements OnInit { //,DoCheck  {
       (<HTMLInputElement>document.getElementById('currentTime')).innerHTML = message+'';
     }.bind(this), this.timeoutInterval);
 
-    if(startPlayer){
+    if(startPlayer){    
       this.player.loadVideoById(this.loop.videoId, this.startTime);
       this.player.playVideo(); 
     }  
@@ -189,10 +190,11 @@ export class HomeComponent implements OnInit { //,DoCheck  {
       }
   }
 
-  SaveState() {
+  onSpeedSelection(){
+    this.player.setPlaybackRate(parseFloat(this.selectedSpeedValue));
+  }
 
-    // https://howchoo.com/g/nwywodhkndm/how-to-turn-an-object-into-query-string-parameters-in-javascript
-    // https://stackoverflow.com/questions/6566456/how-to-serialize-an-object-into-a-list-of-url-query-parameters
+  SaveState() {
 
     document.title = "YouTube Looper -" + this.loop.videoTitle;
 
@@ -207,35 +209,15 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     delete loopClone.times[6].sl;
     delete loopClone.times[7].sl;
 
-    // if(loopClone.times[0].s == '0:00') delete loopClone.times[0];
-    // if(loopClone.times[1].s == '0:00') delete loopClone.times[1];
-    // if(loopClone.times[2].s == '0:00') delete loopClone.times[2];
-    // if(loopClone.times[3].s == '0:00') delete loopClone.times[3];
-    // if(loopClone.times[4].s == '0:00') delete loopClone.times[4];
-    // if(loopClone.times[5].s == '0:00') delete loopClone.times[5];
-    // if(loopClone.times[6].s == '0:00') delete loopClone.times[6];
-    // if(loopClone.times[7].s == '0:00') delete loopClone.times[7];
-
     var urlStateString = (this.serializeLoop(this.loop) + '&&' + this.serializeTimes(this.loop.times));
 
-    console.log(encodeURI(urlStateString));
-
-    let json: string = JSON.stringify(loopClone); // $.param(BitPracticeModel);
-    // json = json.replace(/%3A/g, ':');
-    json = json.replace(/"/g, '');
-    // json = json.replace(/{/g, '');
-    // json = json.replace(/}/g, '');
-    json = json.replace(/videoId/g, 'vid');
-    json = json.replace(/videoTitle/g, 'vt');
-    json = json.replace(/times/g, 't');
-    //json = json.replace(/,null/g, '');
+    urlStateString = urlStateString.replace(/,/g, '&&');
+    urlStateString = urlStateString.replace(/&sl=true/g, '');
+    urlStateString = urlStateString.replace(/&sl=false/g, '');
 
     setTimeout(function (e) {
         window.location.hash = e;
     }, 10, urlStateString);
-
-    //var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + vid + '&t=' + title;
-    //window.history.pushState({ path: newurl }, '', newurl);
   }
 
   loadState() {
@@ -246,49 +228,26 @@ export class HomeComponent implements OnInit { //,DoCheck  {
     if(hash != ''){
 
       var res = hash.split('&&');
-
-      var l = this.parseParams(res[0]);
-      var t = this.parseParams(res[1]);
+      var loopDetails = this.parseParams(res[0]);
 
       // todo: reconstruct entire loop object...
-      this.loop.videoId = l.v;
-      this.loop.videoTitle = l.t;
+      this.loop.videoId = loopDetails.v;
+      this.loop.videoTitle = loopDetails.t;
 
-
-
-      //var loopState = decodeURI(hash);
-      //this.loop = JSON.parse(loopState);
       document.title = "YouTube Looper - " + this.loop.videoTitle;
-    }
-    else{
-      // set default loop up...
-      this.loop.videoId = 'CcGoYPR9FBk';
-      this.loop.videoTitle = 'Getting Started';
-      this.loop.times = [
-        { i: 0, sl: true, s: '0:00', e: '0:02' },
-        { i: 1, sl: false, s: '0:00', e: '0:02' },
-        { i: 2, sl: false, s: '0:00', e: '0:00' },
-        { i: 3, sl: false, s: '0:00', e: '0:00' },
-        { i: 4, sl: false, s: '0:00', e: '0:00' },
-        { i: 5, sl: false, s: '0:00', e: '0:00' },
-        { i: 6, sl: false, s: '0:00', e: '0:00' },
-        { i: 7, sl: false, s: '0:00', e: '0:00' }
-      ];
-    }
-  
-    //get t & v from querystring...
-    //$("#title").val(getParameterByName('t'));
-    //$("#videoid").val(getParameterByName('v'));
 
-    // for (var property in BitPracticeModel) {
-    //     if (BitPracticeModel.hasOwnProperty(property)) {
-    //         if (property != undefined) {
-    //             $("#" + property).val(BitPracticeModel[property]);
-    //         }      
-    //     }
-    // }
+      res.forEach(function(item){
+        var time = this.parseParams(item);
 
-    //document.title = "BitPractice-" + $("#title").val();
+        if(time.i != undefined){
+          this.loop.times[time.i].sl = false;
+          this.loop.times[time.i].s = time.s;
+          this.loop.times[time.i].e = time.e;
+        }
+        
+      }.bind(this));
+
+    }
 }
 
   getParameterByName(name, url) {
@@ -306,7 +265,6 @@ export class HomeComponent implements OnInit { //,DoCheck  {
       var match = url.match(regExp);
 
       if (match && match[7].length == 11) {
-          //$("#e0").val("0:05"); //set default end time so something will play
           setTimeout(function() {
               this.SaveState();
           }, 1000);

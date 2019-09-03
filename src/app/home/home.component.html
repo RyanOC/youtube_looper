@@ -20,7 +20,7 @@
                             <div class="col-xs-4">
                                 <mat-form-field>
                                 <mat-label>Select Speed: </mat-label>
-                                <mat-select  [(ngModel)]="selectedValue" panelClass="happy-animation" placeholder="1.0">
+                                <mat-select [(ngModel)]="selectedSpeedValue" panelClass="happy-animation" placeholder="1.0" (ngModelChange)="onSpeedSelection()">
                                     <mat-option *ngFor="let speed of speeds" [value]="speed.value">
                                         {{speed.viewValue}}
                                     </mat-option>
@@ -52,7 +52,7 @@
                                 placeholder="Enter title" maxlength="30">
                         </div>
                         <div>
-                            <a href="#" id="seek" (click)="SetVideoId(true)">set</a><br />
+                            <!-- <a href="#" id="seek" (click)="SetVideoId(true)">set</a><br /> -->
                             <div id="player"></div><br />
                             Current Time: <span id="currentTime">0:00</span>
                         </div>
