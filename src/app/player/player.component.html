@@ -1,0 +1,64 @@
+<div class="main-content">
+    <h2></h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Times: </div>
+                    <div class="panel-body">
+                        <div *ngFor="let time of loop.times; let i = index;">
+                            <div class="input-group control-group after-add-more bitSelector">
+                                <div (click)="selectBit($event, time)" 
+                                    [class.activeFont]="time.sl===true" 
+                                    [class.inactiveFont]="time.sl===false">
+                                </div>
+                                <input type="text" [(ngModel)]="time.s" [value]="time.s" class="form-control">
+                                <input type="text" [(ngModel)]="time.e" [value]="time.e" class="form-control">
+                            </div>
+                        </div>
+                        <div class="input-group control-group" style="margin:25px 0px 20px 20px">
+                            <div class="col-xs-4">
+                                <mat-form-field>
+                                <mat-label>Select Speed: </mat-label>
+                                <mat-select [(ngModel)]="selectedSpeedValue" panelClass="happy-animation" placeholder="1.0" (ngModelChange)="onSpeedSelection()">
+                                    <mat-option *ngFor="let speed of speeds" [value]="speed.value">
+                                        {{speed.viewValue}}
+                                    </mat-option>
+                                </mat-select>
+                                </mat-form-field>                               
+                                <!-- <p>You selected: {{selectedValue}}</p> -->
+                            </div>
+                            <div class="col-xs-8" style="margin:0px 0px 0px 20px">
+                                <a href="#" class="btn btn-primary btn-sm bottomResetButton" id="seek"
+                                    onclick="javascript:reset();" style="display:none;">reset</a>
+                                <a href="#" (click)="save()" class="btn btn-primary btn-sm bottomResetButton save" id="save">save</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading"></div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="videoid">Video Id:</label>
+                            <input type="text" class="form-control" id="videoid" [(ngModel)]="loop.videoId" aria-describedby="videoidHelp"
+                                placeholder="Enter a Youtube Video URL or Id" onClick="this.select();">
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Title:</label>
+                            <input type="text" class="form-control" id="title" [(ngModel)]="loop.videoTitle" aria-describedby="titlehelp"
+                                placeholder="Enter title" maxlength="30">
+                        </div>
+                        <div>
+                            <!-- <a href="#" id="seek" (click)="SetVideoId(true)">set</a><br /> -->
+                            <div id="player"></div><br />
+                            Current Time: <span id="currentTime">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

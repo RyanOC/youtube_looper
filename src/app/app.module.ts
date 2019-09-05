@@ -62,10 +62,16 @@ import { Location, LocationStrategy, PathLocationStrategy } from '@angular/commo
 import {
 	MatFormFieldModule
 } from '@angular/material/form-field';
+import { HelpComponent } from './help/help.component';
+import { LibraryComponent } from './library/library.component';
+import { PlayerComponent } from './player/player.component';
 
 const appRoutes: Routes = [
-  { path: 'player', component: HomeComponent },
+  { path: 'help', component: HelpComponent },
+  { path: 'library', component: LibraryComponent },
+  { path: 'player', component: PlayerComponent },
   { path: 'customer-list', component: CustomerListComponent },
+  { path: 'home', component: HomeComponent },
   { path: '', component: HomeComponent },
 ];
 
@@ -76,6 +82,9 @@ const appRoutes: Routes = [
     HomeComponent,
     CustomerListComponent,
     CustomerListComponent,
+    HelpComponent,
+    LibraryComponent,
+    PlayerComponent,
   ],
   imports: [
     BrowserModule,
