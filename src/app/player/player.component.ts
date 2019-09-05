@@ -90,11 +90,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // unsubscribe to window object
-    // remove player div contents.
     clearInterval(this.timeInterval); 
-    //(window as any).onYouTubeIframeAPIReady = null;
-    console.log('ngOnDestroy');
   }
 
   // https://developers.google.com/youtube/iframe_api_reference
@@ -153,7 +149,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
     var scripts = document.getElementsByTagName('script');
 
     for (var i = scripts.length; i--;) {
-      console.log(scripts[i].src);
       if (scripts[i].src == url) {
         return;
       }
